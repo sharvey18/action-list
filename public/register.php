@@ -13,11 +13,19 @@ $firstname          = $_POST['firstname'];
 $lastname           = $_POST['lastname'];
 $email              = $_POST['email'];
 $birthPlace         = $_POST['birth-place'];
-$dateOfBirth       = $_POST['date-of-birth'];
+$dateOfBirth        = $_POST['date-of-birth'];
 $address            = $_POST['address'];
 $city               = $_POST['city'];
 $zipCode            = $_POST['zip-code'];
 $state              = $_POST['state'];
+
+if($password === $confirmPassword) {
+    $passMessage = '';
+} else {
+    $passMessage = "Passwords must match";
+}
+
+
 
 if(!empty($username) && !empty($email) && !empty($password)) {
 
@@ -38,6 +46,8 @@ if(!empty($username) && !empty($email) && !empty($password)) {
     // Password hash
     $password = password_hash( $password, PASSWORD_BCRYPT, array('cost' => 12));
 
+
+
     $query = "INSERT INTO users (username, user_password, user_firstname, user_lastname, user_email, user_dob, user_pob, user_address, user_city, user_state, user_zip_code, user_date) ";
     $query .= "VALUES('{$username}','{$password}','{$firstname}','{$lastname}','{$email}', '{$dateOfBirth}', '{$birthPlace}', '{$address}', '{$city}', '{$state}', '{$zipCode}', now())";
     $register_user_query = mysqli_query($connection, $query);
@@ -56,7 +66,8 @@ if(!empty($username) && !empty($email) && !empty($password)) {
 
 } else {
     $message = "";
-}
+    $passMessage = '';
+ }
 
  ?>
 
@@ -80,10 +91,11 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-user-secret"></i>
                                 </div>
-                                <input type="text" name="username" class="form-control" id="username" placeholder="johnny12" required>
+                                <input type="text" name="username" class="form-control" id="username" placeholder="johnny12">
                             </div>
                         </div>
 
+                        <h5><?php echo $passMessage; ?></h5>
 
                         <div class="form-group col-md-6">
                             <label for="password">Password</label>
@@ -91,7 +103,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-key"></i>
                                 </div>
-                                <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
+                                <input type="text" name="password" class="form-control" id="password" placeholder="Password">
                             </div>
                         </div>
 
@@ -101,7 +113,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-unlock-alt"></i>
                                 </div>
-                                <input type="password" name="confirm-password" class="form-control" id="confirm-password" placeholder="Confirm Password" required>
+                                <input type="text" name="confirm-password" class="form-control" id="confirm-password" placeholder="Confirm Password">
                             </div>
                         </div>
 
@@ -117,7 +129,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-user"></i>
                                 </div>
-                                <input type="text" name="firstname" class="form-control" id="firstname" placeholder="John" required>
+                                <input type="text" name="firstname" class="form-control" id="firstname" placeholder="John">
                             </div>
                         </div>
 
@@ -127,7 +139,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-user"></i>
                                 </div>
-                                <input type="text" name="lastname" class="form-control" id="lastname" placeholder="Doe" required>
+                                <input type="text" name="lastname" class="form-control" id="lastname" placeholder="Doe">
                             </div>
                         </div>
 
@@ -137,7 +149,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-envelope-o"></i>
                                 </div>
-                                <input type="email" name="email" class="form-control" id="email" placeholder="you@example.com" required>
+                                <input type="email" name="email" class="form-control" id="email" placeholder="you@example.com">
                             </div>
                         </div>
 
@@ -147,7 +159,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-repeat"></i>
                                 </div>
-                                <input type="text" name="birth-place" class="form-control" id="birth-place" placeholder="New York, NY" required>
+                                <input type="text" name="birth-place" class="form-control" id="birth-place" placeholder="New York, NY">
                             </div>
                         </div>
 
@@ -157,7 +169,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-globe"></i>
                                 </div>
-                                <input type="date" name="date-of-birth" class="form-control" id="date-of-birth" placeholder="10/25/15" required>
+                                <input type="date" name="date-of-birth" class="form-control" id="date-of-birth" placeholder="10/25/15">
                             </div>
                         </div>
 
@@ -167,7 +179,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-address-card-o"></i>
                                 </div>
-                                <input type="text" name="address" class="form-control" id="address" placeholder="123 N. Main St." required>
+                                <input type="text" name="address" class="form-control" id="address" placeholder="123 N. Main St.">
                             </div>
                         </div>
 
@@ -177,7 +189,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-map-marker"></i>
                                 </div>
-                                <input type="text" name="city" class="form-control" id="city" placeholder="New York, NY" required>
+                                <input type="text" name="city" class="form-control" id="city" placeholder="New York, NY">
                             </div>
                         </div>
 
@@ -251,7 +263,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-map-o"></i>
                                 </div>
-                                <input type="text" name="zip-code" class="form-control" id="zip-code" placeholder="90210" required>
+                                <input type="text" name="zip-code" class="form-control" id="zip-code" placeholder="90210">
                             </div>
                         </div>
 

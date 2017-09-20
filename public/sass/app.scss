@@ -1,14 +1,40 @@
 @import 'partials/variables';
+@import 'partials/navigation';
 
 body {
   padding: 0;
   margin: 0;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+.container-fluid {
+  padding: 0;
+}
+
 // removing default padding from container-fluid class from bootstrap
 .main-nav {
   padding: 0;
 }
+
+.navbar-inverse {
+  margin: 0 !important;
+}
+
+
+.index-head {
+  .image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 55rem;
+    padding: 0;
+    margin: 0;
+    }
+  }
 
 #loggedInUser {
   text-transform: capitalize;
@@ -38,11 +64,15 @@ input.hidden {
   border-bottom:1px #f8f8f8 solid;  margin:5px 0  5px 0
 }
 
+@media screen and (min-width: 768px) {
+  .navbar {
+    border-radius: 0;
+  }
+}
+
 @media(min-width: 768px) {
   .field-label-responsive {
     padding-top: .5rem;
     text-align: right;
   }
 }
-
-@import 'partials/navigation';
