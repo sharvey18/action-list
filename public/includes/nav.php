@@ -10,7 +10,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Action List</a>
+          <a class="navbar-brand logo" href="/"></a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -24,7 +24,7 @@
                 <li><a href="list.php">List</a></li>
 
                 <li>
-                    <a href="includes/logout.php" class="btn btn-default btn-circle navBtn">Sign Out</a>
+                    <a href="logout.php" class="btn btn-default btn-circle navBtn">Sign Out</a>
                 </li>
                 <li>
                     <a href="profile.php" id='loggedInUser'>Welcome:
@@ -43,6 +43,10 @@
                 </li>
 
                 <li>
+                    <a href='forgot-password.php'>Forgot Password</a>
+                </li>
+
+                <li>
                     <a class="btn btn-primary btn-circle navBtn"  data-toggle="collapse" href="#nav-collapse2" aria-expanded="false" aria-controls="nav-collapse2">Sign in</a>
                 </li>
 
@@ -53,7 +57,7 @@
 
           </ul>
           <div class="collapse nav navbar-nav nav-collapse" id="nav-collapse2">
-            <form class="navbar-form navbar-right form-inline" role="form" action='includes/login.php' method='post'>
+            <form class="navbar-form navbar-right form-inline" role="form" action='login.php' method='post'>
               <div class="form-group">
                 <label class="sr-only" for="username">Email</label>
                 <input type="text" class="form-control" name="username" placeholder="username" autofocus required />

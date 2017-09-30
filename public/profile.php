@@ -3,17 +3,67 @@
 
 <?php
 
+if(isset($_POST['update-profile-image'])) {
+
+  $update_user_image      = $_FILES['image']['name'];
+  $update_user_image_temp = $_FILES['image']['tmp_name'];
+  $update_user_error      = $_FILES['image']['error'];
+  $update_user_size       = $_FILES['image']['size'];
+  $update_user_type       = $_FILES['image']['type'];
+
+  if(!$update_user_image) {
+    echo "<script type='text/javascript'> alertMessageNoImage(); </script>";
+  }
+
+  if ($update_user_error > 0) {//Checking file has error or not
+    // "Return Code: " . $update_user_error . "<br>";
+    echo "<script type='text/javascript'> alertMessageError(); </script>";
+} else {
+    "Upload: " . $update_user_image . "<br>";
+    "Type: " . $update_user_type . "<br>";
+    "Size: " . ($update_user_size / 1024) . " kB<br>";
+    "Temp file: " . $update_user_image_temp . "<br>";
+
+    if (($update_user_type == "image/gif") || ($update_user_type == "image/jpeg") || ($update_user_type == "image/png") || ($update_user_type == "image/pjpeg")) { //Checking file is an image or not
+        if ($update_user_size < 2097152) { //checking file size is less than 2MB or not
+            if (file_exists("images/" . $update_user_image)) { //Checking file already exists or not
+              echo "<script type='text/javascript'> alertMessageBig(); </script>";
+            } else {
+                move_uploaded_file($update_user_image_temp, "images/" . $update_user_image);
+                echo "<script type='text/javascript'> alertMessage(); </script>";
+            }
+        } else {
+          echo "<script type='text/javascript'> alertMessageBig(); </script>";
+        }
+    } else {
+      echo "<script type='text/javascript'> alertMessageOnlyImage(); </script>";
+    }
+}
+
+    $the_user_id = $_SESSION['user_id'];
+
+    $query = "UPDATE users SET ";
+    $query .= "user_image = '{$update_user_image}' ";
+    $query .= "WHERE user_id = {$the_user_id} ";
+
+    $edit_user_profile_image_query = mysqli_query($connection, $query);
+    confirmQuery($edit_user_profile_image_query);
+
+
+}
+
 if(isset($_POST['update_user'])) {
-    $update_username       = $_POST['username'];
-    $update_user_firstname = $_POST['user_firstname'];
-    $update_user_lastname  = $_POST['user_lastname'];
-    $update_user_email     = $_POST['user_email'];
-    $update_user_dob       = $_POST['user_dob'];
-    $update_user_pob       = $_POST['user_pob'];
-    $update_user_address   = $_POST['user_address'];
-    $update_user_city      = $_POST['user_city'];
-    $update_user_state     = $_POST['user_state'];
-    $update_user_zip_code  = $_POST['user_zip_code'];
+
+    $update_username        = $_POST['username'];
+    $update_user_firstname  = $_POST['user_firstname'];
+    $update_user_lastname   = $_POST['user_lastname'];
+    $update_user_email      = $_POST['user_email'];
+    $update_user_dob        = $_POST['user_dob'];
+    $update_user_pob        = $_POST['user_pob'];
+    $update_user_address    = $_POST['user_address'];
+    $update_user_city       = $_POST['user_city'];
+    $update_user_state      = $_POST['user_state'];
+    $update_user_zip_code   = $_POST['user_zip_code'];
 
     $the_user_id = $_SESSION['user_id'];
 
@@ -33,6 +83,10 @@ if(isset($_POST['update_user'])) {
     $edit_user_profile_query = mysqli_query($connection, $query);
     confirmQuery($edit_user_profile_query);
 
+    echo "<script type='text/javascript'> alertMessageProfileInfo(); </script>";
+
+  } else {
+      echo "";
   }
 
 ?>
@@ -59,30 +113,60 @@ if(isset($_POST['update_user'])) {
       $user_state = $row['user_state'];
 			$user_zip_code = $row['user_zip_code'];
 			$user_date = $row['user_date'];
-
+      $user_image = $row['user_image'];
 		}
+
+    if (!empty($username) &&
+        !empty($user_pass) &&
+        !empty($user_firstname) &&
+        !empty($user_lastname) &&
+        !empty($user_email) &&
+        !empty($user_dob) &&
+        !empty($user_pob) &&
+        !empty($user_address) &&
+        !empty($user_city) &&
+        !empty($user_state) &&
+        !empty($user_zip_code) &&
+        !empty($user_date)) {
+      echo "";
+    } else {
+      echo "<script type='text/javascript'> alertMessageEmptyField(); </script>";
+    }
 
   }
 
   ?>
 
-
-
- <div class="container" style="padding-top: 60px;">
+ <div class="container">
  		<h1 class="page-header">Edit Profile</h1>
  		<div class="row">
  			<!-- left column -->
- 			<div class="col-md-4 col-sm-6 col-xs-12">
- 				<div class="text-center">
- 					<img alt="avatar" class="avatar img-circle img-thumbnail" src="http://lorempixel.com/200/200/people/9/">
- 					<h6>Upload a different photo...</h6><input class="text-center center-block well well-sm" type="file">
- 				</div>
- 			</div><!-- edit form column -->
- 			<div class="col-md-8 col-sm-6 col-xs-12 personal-info">
- 				<!-- <div class="alert alert-info alert-dismissable">
- 					<a class="panel-close close" data-dismiss="alert">×</a> <i class="fa fa-coffee"></i> This is an <strong>.alert</strong>. Use this to show important messages to the user.
- 				</div> -->
+
+      <form class="form-horizontal" role="form" method='POST' enctype='multipart/form-data'>
+   			<div class="col-md-4 col-sm-6 col-xs-12">
+   				<div class="form-group text-center well">
+
+            <?php if($user_image) { ?>
+              <div class="profile-image well" style='background: url("images/<?php echo $user_image ?>");'></div>
+            <?php } else { ?>
+              <div class="profile-image well" style='background: url("images/pup.jpg");'></div>
+            <?php  } ?>
+
+
+
+            <input class="text-center center-block well" type="file" name="image">
+            <button class='btn btn-primary' type="submit" name="update-profile-image">Update Image</button>
+   				</div>
+   			</div><!-- edit form column -->
+      </form>
+
+   			<div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+   				<!-- <div class="alert alert-info alert-dismissable">
+   					<a class="panel-close close" data-dismiss="alert">×</a> <i class="fa fa-coffee"></i> This is an <strong>.alert</strong>. Use this to show important messages to the user.
+   				</div> -->
+          <!-- <?php //echo $confirmMessage; ?> -->
  				<h3>Personal info</h3>
+
  				<form class="form-horizontal" role="form" method='POST'>
                <div class="form-group">
                   <label class="col-lg-3 control-label">Username:</label>
@@ -111,7 +195,7 @@ if(isset($_POST['update_user'])) {
  					<div class="form-group">
  						<label class="col-lg-3 control-label">Birthday:</label>
  						<div class="col-lg-8">
- 							<input class="form-control" type="text" name='user_dob' value="<?php echo $user_dob; ?>">
+ 							<input class="form-control" type="date" name='user_dob' value="<?php echo $user_dob; ?>">
  						</div>
  					</div>
           <div class="form-group">
@@ -217,7 +301,6 @@ if(isset($_POST['update_user'])) {
                       Update
                   </button>
               </div>
-
           </div>
  				</form>
  			</div>

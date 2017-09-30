@@ -1,11 +1,11 @@
 $( document ).ready(function() {
 
-// $('.index-head').slick({
-//   infinite: true,
-//   autoplay: true,
-//   slidesToShow: 1,
-//   slidesToScroll: 1
-// });
+$('.carousel').carousel();
+
+var strikeBtn = $('button#strike-btn');
+strikeBtn.on('click', function() {
+  $(this).parent().parent().find('input').toggleClass('line-through');
+});
 
   $(function() {
     $('#profile-image1').on('click', function() {

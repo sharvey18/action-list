@@ -4,70 +4,126 @@
 
 <?php
 
-if(isset($_POST['register'])) {
+    if($_SERVER["REQUEST_METHOD"] == "POST") {
 
-$username           = $_POST['username'];
-$password           = $_POST['password'];
-$confirmPassword    = $_POST['confirm-password'];
-$firstname          = $_POST['firstname'];
-$lastname           = $_POST['lastname'];
-$email              = $_POST['email'];
-$birthPlace         = $_POST['birth-place'];
-$dateOfBirth        = $_POST['date-of-birth'];
-$address            = $_POST['address'];
-$city               = $_POST['city'];
-$zipCode            = $_POST['zip-code'];
-$state              = $_POST['state'];
+        $username           = trim($_POST['username']);
+        $password           = trim($_POST['password']);
+        $confirmPassword    = trim($_POST['confirm-password']);
+        $firstname          = trim($_POST['firstname']);
+        $lastname           = trim($_POST['lastname']);
+        $email              = trim($_POST['email']);
+        $birthPlace         = trim($_POST['birth-place']);
+        $dateOfBirth        = trim($_POST['date-of-birth']);
+        $address            = trim($_POST['address']);
+        $city               = trim($_POST['city']);
+        $zipCode            = trim($_POST['zip-code']);
+        $state              = trim($_POST['state']);
+        $date               = date('d-m-y');
 
-if($password === $confirmPassword) {
-    $passMessage = '';
-} else {
-    $passMessage = "Passwords must match";
+        $error = [
+            'username'          => '',
+            'password'          => '',
+            'confirmPassword'   => '',
+            'firstname'         => '',
+            'lastname'          => '',
+            'birth-place'       => '',
+            'date-of-birth'     => '',
+            'address'           => '',
+            'city'              => '',
+            'zip-code'          => '',
+            'state'             => ''
+        ];
+
+        // Username validation
+        if(strlen($username) < 4 ) {
+            $error['username'] = 'Username needs to be longer than 4 characters.';
+        }
+
+        if($username === '' ) {
+            $error['username'] = 'Username can not be empty.';
+        }
+
+        if(username_exists( $username )) {
+            $error['username'] = 'Username ' . $username . ', is already taken.';
+        }
+
+
+        // Password validation
+        if($password === $confirmPassword) {
+
+            if($password === '' ) {
+                $error['password'] = 'Password can not be empty';
+            }
+
+            if($confirmPassword === '' ) {
+                $error['confirm-password'] = 'Confirm password can not be empty';
+            }
+
+        } else {
+            $error['password'] = 'Passwords do not match.';
+        }
+
+        // First and Last name validation
+        if($firstname === '' ) {
+            $error['firstname'] = 'Firstname can not be empty.';
+        }
+
+        if($lastname === '' ) {
+            $error['lastname'] = 'Lastname can not be empty.';
+        }
+
+        // Email validation
+        if($email === '' ) {
+            $error['email'] = 'Username can not be empty';
+        }
+
+        if(email_exists( $email )) {
+            $error['email'] = 'Email ' . $email . ', is already taken. <a href="index.php">Please login</a>';
+        }
+
+        // Birth Place and Birthday validation
+        if($birthPlace === '' ) {
+            $error['birth-place'] = 'City where you where born cannot be empty.';
+        }
+
+        if($dateOfBirth === '' ) {
+            $error['date-of-birth'] = 'Birthday can not be empty.';
+        }
+
+        // Address, City, State, Zip Code validation
+        if($address === '') {
+            $error['address'] = 'Address can not be empty';
+        }
+
+        if($city === '') {
+            $error['city'] = 'City can not be empty';
+        }
+
+        if($state === '') {
+            $error['state'] = 'State can not be empty';
+        }
+
+        if($zipCode === '') {
+            $error['zip-code'] = 'State can not be empty';
+        }
+
+        foreach ($error as $key => $value) {
+            if(empty($value)) {
+
+                unset($error[$key]);
+
+            }
+        } // foreach
+
+        if(empty($error)) {
+            register_user($username, $password, $confirmPassword, $firstname, $lastname, $email, $birthPlace, $dateOfBirth, $address, $city, $zipCode, $state, $date);
+
+            login_user($username, $password);
+
+            // echo "<script type='text/javascript'> alertMessageRegistrationSuccess(); </script>";
+        }
+
 }
-
-
-
-if(!empty($username) && !empty($email) && !empty($password)) {
-
-    // Clean up the values with real_escape
-    $username           = mysqli_real_escape_string($connection, $username);
-    $password           = mysqli_real_escape_string($connection, $password);
-    $confirmPassword    = mysqli_real_escape_string($connection, $confirmPassword);
-    $firstname          = mysqli_real_escape_string($connection, $firstname);
-    $lastname           = mysqli_real_escape_string($connection, $lastname);
-    $email              = mysqli_real_escape_string($connection, $email);
-    $birthPlace         = mysqli_real_escape_string($connection, $birthPlace);
-    $dateOfBirth        = mysqli_real_escape_string($connection, $dateOfBirth);
-    $address            = mysqli_real_escape_string($connection, $address);
-    $city               = mysqli_real_escape_string($connection, $city);
-    $zipCode            = mysqli_real_escape_string($connection, $zipCode);
-    $state              = mysqli_real_escape_string($connection, $state);
-
-    // Password hash
-    $password = password_hash( $password, PASSWORD_BCRYPT, array('cost' => 12));
-
-
-
-    $query = "INSERT INTO users (username, user_password, user_firstname, user_lastname, user_email, user_dob, user_pob, user_address, user_city, user_state, user_zip_code, user_date) ";
-    $query .= "VALUES('{$username}','{$password}','{$firstname}','{$lastname}','{$email}', '{$dateOfBirth}', '{$birthPlace}', '{$address}', '{$city}', '{$state}', '{$zipCode}', now())";
-    $register_user_query = mysqli_query($connection, $query);
-    if(!$register_user_query) {
-        die("QUERY FAILED " . mysqli_error($connection) . ' ' . mysqli_errno($connection));
-    }
-
-    $message = "Your registration has been accepted, thank you";
-
-} else {
-
-    $message = "Fields cannot be left empty, very very bad";
-
-}
-
-
-} else {
-    $message = "";
-    $passMessage = '';
- }
 
  ?>
 
@@ -75,27 +131,27 @@ if(!empty($username) && !empty($email) && !empty($password)) {
         <div class="row">
 
             <div class="col-md-8 col-md-offset-2">
-                <form role="form" method="POST" action="#">
+                <form action="" method="post" enctype="multipart/form-data">
 
                     <legend class="text-center">Register</legend>
-
-                    <h4 style="text-align: center;"><?php echo $message; ?></h4>
 
                     <fieldset>
 
                         <legend>Login Details</legend>
-
+                        <!-- <?php //echo $message; ?> -->
                         <div class="form-group col-md-12">
                             <label for="username">Username</label>
                             <div class="input-group">
                                 <div class="input-group-addon">
                                     <i class="fa fa-user-secret"></i>
                                 </div>
-                                <input type="text" name="username" class="form-control" id="username" placeholder="johnny12">
+                                <input type="text" name="username" class="form-control" id="username" placeholder="johnny12"
+                                    autocomplete='on' value='<?php echo isset($username) ? $username : ''; ?>'>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['username']) ? $error['username'] : ''; ?></span>
                         </div>
 
-                        <h5><?php echo $passMessage; ?></h5>
+                        <!-- <h5><?php// echo //$passMessage; ?></h5> -->
 
                         <div class="form-group col-md-6">
                             <label for="password">Password</label>
@@ -103,8 +159,9 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-key"></i>
                                 </div>
-                                <input type="text" name="password" class="form-control" id="password" placeholder="Password">
+                                <input type="password" name="password" class="form-control" id="password" placeholder="Password">
                             </div>
+                            <span class='formErrors'><?php echo isset($error['password']) ? $error['password'] : ''; ?></span>
                         </div>
 
                         <div class="form-group col-md-6">
@@ -113,24 +170,23 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-unlock-alt"></i>
                                 </div>
-                                <input type="text" name="confirm-password" class="form-control" id="confirm-password" placeholder="Confirm Password">
+                                <input type="password" name="confirm-password" class="form-control" id="confirm-password" placeholder="Confirm Password">
                             </div>
+                            <span class='formErrors'><?php echo isset($error['confirm-password']) ? $error['confirm-password'] : ''; ?></span>
                         </div>
 
                         <legend>Account Details</legend>
 
-                        <!-- <div class="form-group col-md-6">
-                            <label for="first_name">First name</label>
-                            <input type="text" class="form-control" name="" id="first_name" placeholder="First Name">
-                        </div> -->
                         <div class="form-group col-md-6">
                             <label for="firstname">First Name</label>
                             <div class="input-group">
                                 <div class="input-group-addon">
                                     <i class="fa fa-user"></i>
                                 </div>
-                                <input type="text" name="firstname" class="form-control" id="firstname" placeholder="John">
+                                <input type="text" name="firstname" class="form-control" id="firstname" placeholder="John"
+                                    autocomplete='on' value='<?php echo isset($firstname) ? $firstname : ''; ?>'>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['firstname']) ? $error['firstname'] : ''; ?></span>
                         </div>
 
                         <div class="form-group col-md-6">
@@ -139,8 +195,10 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-user"></i>
                                 </div>
-                                <input type="text" name="lastname" class="form-control" id="lastname" placeholder="Doe">
+                                <input type="text" name="lastname" class="form-control" id="lastname" placeholder="Doe"
+                                    autocomplete='on' value='<?php echo isset($lastname) ? $lastname : ''; ?>'>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['lastname']) ? $error['lastname'] : ''; ?></span>
                         </div>
 
                         <div class="form-group col-md-12">
@@ -149,8 +207,10 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-envelope-o"></i>
                                 </div>
-                                <input type="email" name="email" class="form-control" id="email" placeholder="you@example.com">
+                                <input type="email" name="email" class="form-control" id="email" placeholder="you@example.com"
+                                    autocomplete='on' value='<?php echo isset($email) ? $email : ''; ?>'>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['email']) ? $error['email'] : ''; ?></span>
                         </div>
 
                         <div class="form-group col-md-6">
@@ -159,8 +219,10 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-repeat"></i>
                                 </div>
-                                <input type="text" name="birth-place" class="form-control" id="birth-place" placeholder="New York, NY">
+                                <input type="text" name="birth-place" class="form-control" id="birth-place" placeholder="New York, NY"
+                                    autocomplete='on' value='<?php echo isset($birthPlace) ? $birthPlace : ''; ?>'>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['birth-place']) ? $error['birth-place'] : ''; ?></span>
                         </div>
 
                         <div class="form-group col-md-6">
@@ -169,8 +231,10 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-globe"></i>
                                 </div>
-                                <input type="date" name="date-of-birth" class="form-control" id="date-of-birth" placeholder="10/25/15">
+                                <input type="date" name="date-of-birth" class="form-control" id="date-of-birth" placeholder="10/25/15"
+                                    autocomplete='on' value='<?php echo isset($dateOfBirth) ? $dateOfBirth : ''; ?>'>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['date-of-birth']) ? $error['date-of-birth'] : ''; ?></span>
                         </div>
 
                         <div class="form-group col-md-6">
@@ -179,8 +243,10 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-address-card-o"></i>
                                 </div>
-                                <input type="text" name="address" class="form-control" id="address" placeholder="123 N. Main St.">
+                                <input type="text" name="address" class="form-control" id="address" placeholder="123 N. Main St."
+                                    autocomplete='on' value='<?php echo isset($address) ? $address : ''; ?>'>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['address']) ? $error['address'] : ''; ?></span>
                         </div>
 
                         <div class="form-group col-md-6">
@@ -189,8 +255,10 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-map-marker"></i>
                                 </div>
-                                <input type="text" name="city" class="form-control" id="city" placeholder="New York, NY">
+                                <input type="text" name="city" class="form-control" id="city" placeholder="New York, NY"
+                                    autocomplete='on' value='<?php echo isset($city) ? $city : ''; ?>'>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['city']) ? $error['city'] : ''; ?></span>
                         </div>
 
                         <div class="form-group col-md-6">
@@ -200,7 +268,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                     <i class="fa fa-map-marker"></i>
                                 </div>
                                 <select class="form-control" id="state" name="state">
-                                    <option value="">---</option>
+                                    <option value="<?php echo isset($state) ? $state : ''; ?>">---</option>
                                     <option value="AK">Alaska</option>
                                     <option value="AL">Alabama</option>
                                     <option value="AR">Arkansas</option>
@@ -255,6 +323,7 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                     <option value="WY">Wyoming</option>
                                 </select>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['state']) ? $error['state'] : ''; ?></span>
                            </div>
 
                         <div class="form-group col-md-6">
@@ -263,14 +332,21 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 <div class="input-group-addon">
                                     <i class="fa fa-map-o"></i>
                                 </div>
-                                <input type="text" name="zip-code" class="form-control" id="zip-code" placeholder="90210">
+                                <input type="text" name="zip-code" class="form-control" id="zip-code" placeholder="90210"
+                                    autocomplete='on' value='<?php echo isset($zipCode) ? $zipCode : ''; ?>'>
                             </div>
+                            <span class='formErrors'><?php echo isset($error['zip-code']) ? $error['zip-code'] : ''; ?></span>
                         </div>
+
+                        <!-- <div class="form-group col-md-6">
+                            <label for="image">Profile Image</label>
+                            <input type="file" name="image">
+                        </div> -->
 
 
                     </fieldset>
 
-                    <fieldset>
+                    <!-- <fieldset>
                         <legend>Optional Details</legend>
 
                         <div class="form-group col-md-6">
@@ -300,9 +376,9 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                             <textarea class="form-control" id="specify" name=""></textarea>
                         </div>
 
-                    </fieldset>
+                    </fieldset> -->
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <div class="col-md-12">
                             <div class="checkbox">
                                 <label>
@@ -311,14 +387,14 @@ if(!empty($username) && !empty($email) && !empty($password)) {
                                 </label>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="form-group">
                         <div class="col-md-12">
                             <button type="submit" name='register' class="btn btn-primary">
                                 Register
                             </button>
-                            <a href="#">Already have an account?</a>
+                            <a href="login.php">Already have an account?</a>
                         </div>
                     </div>
 

@@ -1,5 +1,6 @@
 @import 'partials/variables';
 @import 'partials/navigation';
+@import 'partials/sweetalert';
 
 body {
   padding: 0;
@@ -19,8 +20,74 @@ body {
   padding: 0;
 }
 
+section.layout {
+  padding: 6rem 1rem;
+}
+
+.btn-primary {
+  background: $bdazzleBlue;
+}
+
+.logo {
+  background: url('/images/action-list-logo.png');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 15rem;
+  height: 5rem;
+}
+
+.item {
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  height: 70rem;
+  width: auto;
+}
+
+.formErrors {
+  color: $rose;
+}
+
+#create_list {
+  margin-top: 3rem;
+}
+
+#delete_list,
+#shareing_list {
+  margin-top: 1.5rem;
+  text-transform: capitalize;
+}
+
+.profile-image {
+  width: auto;
+  height: 30rem;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.sweet-alert .sa-custom  {
+    width: 100% !important;
+    height: 15rem !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    margin: 0 !important;
+    padding: 0;
+    position: relative;
+    box-sizing: content-box;
+  }
+
 .navbar-inverse {
   margin: 0 !important;
+}
+
+.line-through {
+  text-decoration: line-through;
+  background: $rose;
+  color: $white;
+  font-style: italic;
 }
 
 
